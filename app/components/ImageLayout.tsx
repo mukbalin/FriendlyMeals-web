@@ -108,7 +108,7 @@ const Layout: React.FC = () => {
       {generatedRecipe && (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-          <RecipeDetail recipeData={generatedRecipe} readonly={true} />
+          <RecipeDetail recipe={generatedRecipe} readonly={true} />
           <div className="flex justify-center mt-8 pb-12">
             <Button onClick={handleSave} size="lg" className="shadow-lg bg-emerald-600 hover:bg-emerald-700 min-w-[200px]">
               Save to My Recipes

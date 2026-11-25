@@ -7,7 +7,7 @@
     "dev": "react-router dev",
     "build": "react-router build",
     "lint": "eslint .",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc -p tsconfig.app.json && tsc -p tsconfig.node.json"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.8",

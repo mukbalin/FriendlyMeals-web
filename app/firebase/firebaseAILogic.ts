@@ -1,6 +1,7 @@
 import { getGenerativeModel, Schema, type Part, ResponseModality } from "firebase/ai";
 import { ai, storage } from "./firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getUser } from "./auth";
 import type { Recipe } from "./data";
 // Tags are now dynamic and fetched from the database when needed for display
 
@@ -23,6 +24,8 @@ export async function generateTextRecipe(
 
 // Generates a header image for the recipe and saves it to Firebase Storage
 export async function generateRecipeImage(title: string): Promise<string> {
+  await getUser();
+
   const model = getGenerativeModel(ai, {
     model: "gemini-3.1-flash-image",
     generationConfig: {

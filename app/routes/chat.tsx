@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ai } from "../firebase/firebase";
 import { getGenerativeModel } from "firebase/ai";
 import ChatMessage from "@/components/ChatMessage";
