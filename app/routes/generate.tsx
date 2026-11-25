@@ -21,6 +21,7 @@ export function meta() {
 export default function GeneratePage() {
     const [loadingMessage, setLoadingMessage] = useState<'Generating recipe' | 'Generating image' | null>(null);
     const [generatedRecipe, setGeneratedRecipe] = useState<Recipe | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [isInputExpanded, setIsInputExpanded] = useState(true);
     const navigate = useNavigate();
 
@@ -28,6 +29,8 @@ export default function GeneratePage() {
         ingredients: string,
         cuisineType: string
     ) => {
+        setErrorMessage(null);
+        setGeneratedRecipe(null);
         try {
             setLoadingMessage("Generating recipe");
             const recipe: Recipe = await generateStructuredJsonRecipe(
@@ -40,6 +43,11 @@ export default function GeneratePage() {
             setGeneratedRecipe({ ...recipe, imageUri });
         } catch (error) {
             console.error("Error generating text recipe:", error);
+            setErrorMessage(
+                error instanceof Error
+                    ? error.message
+                    : "Recipe generation failed. Check the browser console for details."
+            );
         } finally {
             setLoadingMessage(null);
         }
@@ -79,6 +87,7 @@ export default function GeneratePage() {
                     <div className="p-4 border-t bg-muted/10">
                         <IngredientInput
                             isLoading={loadingMessage || false}
+                            errorMessage={errorMessage}
                             handleSubmit={generateTextRecipeHandler}
                         />
                     </div>

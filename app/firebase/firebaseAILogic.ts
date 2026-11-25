@@ -37,33 +37,24 @@ export async function generateRecipeImage(title: string): Promise<string> {
 
   const result = await model.generateContent(prompt);
 
-  try {
-    const inlineDataParts = result.response.inlineDataParts();
-    if (inlineDataParts?.[0]) {
-      const { data, mimeType } = inlineDataParts[0].inlineData;
-
-      // Convert base64 to Blob
-      const byteCharacters = atob(data);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: mimeType });
-
-      // Save to Firebase Storage
-      const filename = `recipe_images/${Date.now()}_${title.replace(/\s+/g, '_').toLowerCase()}.png`;
-      const storageRef = ref(storage, filename);
-      await uploadBytes(storageRef, blob, { contentType: mimeType });
-      const downloadURL = await getDownloadURL(storageRef);
-
-      return downloadURL;
-    }
-  } catch (err) {
-    console.error('Image generation or upload failed:', err);
+  const imagePart = result.response.inlineDataParts()?.[0];
+  if (!imagePart) {
+    throw new Error("The AI model did not return an image.");
   }
 
-  return ""; // Fallback
+  const { data, mimeType } = imagePart.inlineData;
+  const byteCharacters = atob(data);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], { type: mimeType });
+
+  const filename = `recipe_images/${Date.now()}_${title.replace(/\s+/g, '_').toLowerCase()}.png`;
+  const storageRef = ref(storage, filename);
+  await uploadBytes(storageRef, blob, { contentType: mimeType });
+  return getDownloadURL(storageRef);
 }
 
 // Calls Gemini to return JSON based on ingredients and cuisine type

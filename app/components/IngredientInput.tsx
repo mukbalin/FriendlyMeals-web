@@ -8,9 +8,10 @@ import { Spinner } from "@/components/ui/spinner";
 interface IngredientInputProps {
   handleSubmit: (ingredients: string, cuisineType: string) => Promise<void>;
   isLoading: boolean | string;
+  errorMessage?: string | null;
 }
 
-export const IngredientInput: React.FC<IngredientInputProps> = ({ handleSubmit, isLoading }) => {
+export const IngredientInput: React.FC<IngredientInputProps> = ({ handleSubmit, isLoading, errorMessage }) => {
   const [ingredients, setIngredients] = useState("");
   const [cuisineType, setCuisineType] = useState("");
 
@@ -23,7 +24,9 @@ export const IngredientInput: React.FC<IngredientInputProps> = ({ handleSubmit, 
         <FieldLabel>Ingredients</FieldLabel>
         <Textarea
           disabled={!!isLoading}
+          required
           placeholder="Enter your list of ingredients"
+          value={ingredients}
           onChange={(e) => setIngredients(e.target.value)}
           rows={5}
         />
@@ -32,6 +35,7 @@ export const IngredientInput: React.FC<IngredientInputProps> = ({ handleSubmit, 
         <FieldLabel>Cuisine</FieldLabel>
         <Select
           disabled={!!isLoading}
+          required
           value={cuisineType}
           onChange={(e) => setCuisineType(e.target.value)}
         >
@@ -42,6 +46,11 @@ export const IngredientInput: React.FC<IngredientInputProps> = ({ handleSubmit, 
           <option value="American">American</option>
         </Select>
       </Field>
+      {errorMessage && (
+        <p role="alert" className="text-sm text-destructive">
+          Recipe generation failed: {errorMessage}
+        </p>
+      )}
       <Button
         className="w-full"
         disabled={!!isLoading}

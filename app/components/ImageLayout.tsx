@@ -17,6 +17,7 @@ const Layout: React.FC = () => {
   const [image, setImage] = useState<File>(new File([], '', { type: "image", }));
   const [isLoading, setIsLoading] = useState(false);
   const [generatedRecipe, setGeneratedRecipe] = useState<Recipe | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isInputExpanded, setIsInputExpanded] = useState(true);
   const navigate = useNavigate();
 
@@ -25,13 +26,19 @@ const Layout: React.FC = () => {
     cuisineType: string
   ) => {
     setIsLoading(true);
+    setErrorMessage(null);
+    setGeneratedRecipe(null);
     try {
       const recipe = await generateRecipeFromImage(image, cuisineType);
       setGeneratedRecipe(recipe);
       setIsInputExpanded(false);
     } catch (error) {
-      console.error("Error generating text recipe:", error);
-      // Handle error
+      console.error("Error generating recipe from image:", error);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Recipe generation failed. Check the browser console for details."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -100,6 +107,11 @@ const Layout: React.FC = () => {
               {isLoading && <Spinner className="mr-2 h-4 w-4" />}
               {isLoading ? 'Loading...' : 'Generate'}
             </Button>
+            {errorMessage && (
+              <p role="alert" className="text-sm text-destructive">
+                Recipe generation failed: {errorMessage}
+              </p>
+            )}
           </div>
         )}
       </div>
